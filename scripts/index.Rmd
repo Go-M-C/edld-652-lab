@@ -1,0 +1,111 @@
+---
+title: "EDLD652_Lab_PS3"
+author: "Michelle Cui"
+date: "2025-02-12"
+output:
+  html_document:
+    df_print: paged
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cho = TRUE,
+                      eval = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      fig.width = 8,
+                      fig.height = 6)
+```
+
+```{r include=FALSE}
+library(tidyverse)
+library(here)
+library(scales)
+library(ggforce)
+library(ggrepel)
+library(gghighlight)
+library(ggplot2)
+library(dplyr)
+library(forcats)
+library(maps)
+library(scales)
+library(colorblindr)
+library(patchwork)
+theme_set(theme_minimal(base_family = "Times"))
+```
+
+**Data**
+
+```{r}
+honey <- read.csv(here("data","honeyproduction.csv"))
+#summary(honey)
+#str(honey)
+```
+
+**Lab Tasks**
+
+1. Create two plots from the same data. Choose wisely - so that they are two different types of plots (also note: plots with facet_wrap doesn’t count here!)
+```{r}
+honey_98_12 <- honey %>% 
+  filter(year == 1998 | year == 2012) %>% 
+  select(state, year, stocks) %>% 
+  mutate(state = fct_reorder(state, stocks))
+
+p1 <- ggplot(honey_98_12, aes(x = state, y = stocks, fill = year)) +
+  geom_col(position = "dodge") +
+  labs(title = "Honey Stocks by State in 1998 vs 2012",
+       x = "State",
+       y = "Honey Stocks",
+       fill = "Year") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 5))+
+  scale_y_continuous(labels = label_comma())
+
+
+honey_2012 <- honey %>% 
+  filter(year == 2012)
+
+honey_2012 <- honey_2012 %>% 
+  mutate(state = tolower(state.name[match(state, state.abb)]))
+
+us_states <- map_data("state")
+
+map_data_merged <- us_states %>% 
+  left_join(honey_2012, by = c("region" = "state"))
+
+p2 <- ggplot(map_data_merged, aes(x = long, y = lat, group = group, fill = prodvalue)) +
+  geom_polygon(color = "white") +
+  scale_fill_viridis_c(option = "plasma", na.value = "grey90") +
+  scale_fill_continuous(name = "Production Value", labels = label_dollar()) +
+  labs(title = "Honey Production Value by State(2012)",
+       x = "Longitude",
+       y = "Latitude",
+       fill = "Production Value ($)")
+
+
+```
+
+2. Now combine those plots side-by-side using library(patchwork) we learned in week 5
+
+```{r}
+p1 + p2
+```
+
+3. Now combine those plots by stacking them vertically (also using library(patchwork) we learned in week 5
+
+```{r}
+p1/p2
+```
+
+4. Which one do you prefer when comparing #1 vs. #2 vs. #3? Reflect briefly.
+
+Answer: I like the #3 most because the side by side stacking makes the plots look clustered. However, the #3 is not satisfying because the width of the p2 is affected by p1. I wonder how can I fix it. So I tried a few things.
+
+```{r}
+p1/p2 + plot_layout(heights = c(1,0.7)) # Equal heights. This doesn't work well
+
+p1/p2 + plot_layout(guides = "collect", heights = c(1,1))
+# This one looks slightly better
+
+(p1 + plot_spacer()) / p2 + plot_layout(heights = c(1,1))
+```
+
