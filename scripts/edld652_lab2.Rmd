@@ -1,0 +1,100 @@
+---
+title: "edld652_lab2"
+author: "Michelle Cui"
+date: "2025-01-15"
+output:
+  pdf_document
+---
+
+```{r setup, include=FALSE}
+# Don't make a change here
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+```
+
+```{r}
+# load packages
+library(tidyverse)
+library(here)
+library(janitor)
+library(rio)
+```
+
+**Load Data**
+
+```{r}
+# read in the data set
+cdc <- read.csv(here("data","US_births_1994-2003_CDC_NCHS.csv")) %>% 
+  filter(year < "2000")
+
+ssa <- read.csv(here("data","US_births_2000-2014_SSA.csv"))
+```
+
+**Wrangle Data**
+
+```{r}
+
+head(cdc)
+head(ssa)
+
+births_combine <- bind_rows(cdc,ssa)
+
+month_names <- c("january", "feburary", "march","april","may","june","july","august","september","october","november","december")
+
+day_names <- c("monday","tuesday","wednesday","thursday","friday","saturday","sunday")
+
+birth <- births_combine %>% 
+  mutate(month = factor(month, labels = month_names, ordered = TRUE)) %>% 
+  mutate(day_of_week = factor(day_of_week, labels = day_names, ordered = TRUE)) %>% 
+  mutate(weekend = ifelse(day_of_week %in% c("saturday", "sunday"), TRUE, FALSE))
+```
+
+**Make a bar plot**
+
+```{r}
+total_births_weekdays <- birth %>% 
+  group_by(day_of_week) %>% 
+  summarize(total = sum(births))
+
+total_births_weekdays %>% 
+  ggplot(aes(x = day_of_week, y = total, fill = day_of_week)) +
+  geom_col() +
+  guides(fill = "none")
+```
+
+**Make a point plot**
+
+```{r}
+total_births_weekdays %>% 
+  mutate(total = total/1000000) %>% 
+  ggplot(aes(day_of_week, total)) +
+  geom_point(color = "#1ed994",
+             size = 5)+
+  labs(x = "Day of Week",
+       y = "Total (Million)")+
+  expand_limits(y = c(0, 15))+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 45))
+  
+```
+
+
+```{r}
+birth_avg <- birth %>% 
+  group_by(month,date_of_month) %>% 
+  summarize(birth_avg = mean(births))
+
+birth_avg %>% 
+  ggplot(aes(x = date_of_month, y = month, fill = birth_avg)) +
+  geom_tile() +
+  theme_minimal()
+```
+
+```{r}
+birth_avg %>% 
+  ggplot(aes(x = date_of_month, y = month, fill = birth_avg)) +
+  geom_tile() +
+  theme_minimal()
+```
+

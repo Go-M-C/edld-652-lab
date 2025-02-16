@@ -1,0 +1,78 @@
+---
+title: "edld652_lab3"
+author: "Michelle Cui"
+date: "2025-01-23"
+output: 
+  html_document:
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      eval = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(here)
+library(viridis)
+```
+
+
+```{r}
+df <- read.csv(here("data","gapminder.csv"))
+
+```
+
+1. Create a bar chart
+
+```{r}
+countinent_counts <- df %>% 
+  group_by(continent) %>% 
+  summarize(countries = n_distinct(country))
+
+
+countinent_counts %>% 
+  ggplot(aes(x = continent, y = countries, fill = continent))+
+  geom_col() +
+  labs(title = "Plot 1")+
+  theme_minimal()
+```
+
+2. Use the discrete viridis color palette instead to see if this is better
+
+```{r}
+countinent_counts %>% 
+  ggplot(aes(x = continent, y = countries, fill = continent))+
+  geom_col() +
+  labs(title = "Plot 2") +
+  scale_fill_viridis_d() +
+  theme_minimal()
+```
+
+3. Use arguments in the scale function, for instance, use the plasma palette from the viridis package as an option
+Would you change anything in the colors you see to improve he visualization?
+
+```{r}
+countinent_counts %>% 
+  ggplot(aes(x = continent, y = countries, fill = continent))+
+  geom_col() +
+  labs(title = "Plot 3") +
+  scale_fill_viridis_d(option = "plasma") +
+  theme_minimal()
+```
+
+4. Specify your own colors
+
+```{r}
+library(wesanderson)
+countinent_counts %>% 
+  ggplot(aes(x = continent, y = countries, fill = continent))+
+  geom_col() +
+  labs(title = "Plot 4") +
+  scale_fill_manual(values = c("#008689", "#ffd700","#3fb0da","#dd6541", "#8ec582")) +
+  theme_minimal()
+```
+

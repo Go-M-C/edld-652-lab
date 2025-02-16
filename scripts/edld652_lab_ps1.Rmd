@@ -1,0 +1,100 @@
+---
+title: "edld652_lab_ps1"
+author: "Michelle Cui"
+date: "2025-01-22"
+output: 
+  html_document:
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      eval = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+```
+
+### 1.Install educational package
+
+```{r}
+library(educationdata)
+library(devtools)
+library(tidyverse)
+library(here)
+library(rio)
+```
+
+### 2.Get relevant data
+
+```{r}
+df <- get_education_data(level = 'schools',
+                          source = 'ccd',
+                          topic = 'enrollment',
+                          filter = list(year = 2020,
+                                        grade = 9:12))
+head(df)
+```
+
+### 3.Initial exploration
+
+```{r}
+df %>% 
+  ggplot(aes(enrollment)) +
+  geom_histogram(bins = NULL, alpha = 0.7, position = "dodge")+
+  theme_minimal()
+
+df %>% 
+  ggplot(aes(enrollment)) +
+  geom_histogram(bins = 200)+
+  theme_minimal()
+
+df %>% 
+  ggplot(aes(enrollment)) +
+  geom_histogram(binwidth = 15)+
+  theme_minimal()
+
+df %>% 
+  ggplot(aes(enrollment)) +
+  geom_histogram(bins = 20)+
+  theme_minimal()
+
+df %>% 
+  ggplot(aes(enrollment)) +
+  geom_density(alpha = 0.2) +
+  theme_minimal()
+
+```
+
+### 4. Re-load the combined births by day dataset used in Lab2 and generate a heatmap of average births by day
+
+```{r}
+birth <- read.csv(here("data","birth.csv"))
+
+# birth <- birth %>% 
+#   mutate(
+#     month = case_when(
+#       month == "feburary" ~ "february",
+#       TRUE ~ month
+#     )
+#   ) %>% 
+#   export(here("data","birth.csv"))
+
+birth_avg <- birth %>% 
+  group_by(month,date_of_month) %>% 
+  summarize(birth_avg = mean(births))
+unique(birth_avg$month)
+
+library(forcats)
+
+birth_avg <- birth_avg %>% 
+  mutate(month = fct_relevel(month,"january", "february","march","april","may","june","july","august",
+"september","october","november","december"))
+
+
+birth_avg %>% 
+  ggplot(aes(x = date_of_month, y = fct_inorder(month))) +
+  geom_tile(aes(fill = birth_avg)) +
+  scale_fill_viridis_c() +
+  theme_minimal()
+```
+

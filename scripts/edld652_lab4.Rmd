@@ -1,0 +1,88 @@
+---
+title: "EDLD652_lab4"
+author: "Michelle Cui"
+date: "2025-01-29"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      eval = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+```
+
+```{r}
+library(here)
+library(tidyverse)
+library(colorblindr)
+library(gghighlight)
+library(khroma)
+library(colorblindcheck)
+```
+
+#### Load Data
+
+```{r}
+honey <- read.csv(here("data","honeyproduction.csv"))
+
+```
+
+#### Wrangle Data
+1. Visualize the total production of honey across years by state
+Plot 1
+```{r}
+
+west_coast <- c("WA", "OR", "CA")
+
+honey %>% 
+  ggplot(aes(x = year, y = totalprod, color = state)) + geom_line()+
+  gghighlight(state %in% west_coast,
+              use_direct_label = TRUE,
+              label_key = state)+
+  labs(title = "Total Production of Honey Across years by State",
+       x = "Year",
+       y = "Total Production of Honey")+
+  theme_minimal()
+```
+
+
+```{r}
+
+  
+```
+
+2. Reproduce the plot according three different kinds of color blindness (Deutanomaly, Protanomaly, Tritanomaly, and Desaturated)
+
+```{r}
+
+p <- ggplot(honey,
+            aes(x = year, y = totalprod, color = state)) +
+  geom_line() +
+  gghighlight(state %in% west_coast,
+              use_direct_label = TRUE,
+              label_key = state)+
+  theme_classic()
+
+p
+
+p+
+  scale_fill_OkabeIto()
+
+
+cvd_grid(p)
+```
+
+
+```{r}
+p+
+  scale_fill_manual(values = colour("bright"))
+```
+
+3. Reproduce the plot using a color blind safe palette. 
+
+```{r}
+p + 
+  scale_color_viridis_d(option = "plasma")
+```
+

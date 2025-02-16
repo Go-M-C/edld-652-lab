@@ -1,0 +1,92 @@
+---
+title: "EDLD652_Lab_S2"
+author: "Michelle Cui"
+date: "2025-01-30"
+output:
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      eval = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      fig.width = 5,
+                      fig.height = 4)
+```
+
+```{r}
+library(tidyverse)
+library(here)
+library(scales)
+library(ggplot2)
+library(dplyr)
+```
+
+```{r}
+gap <- read.csv(here("data/gapminder.csv"))
+```
+
+### Tasks
+
+**Scatter plot**
+
+```{r}
+gap_1987 <- gap %>% 
+  filter(year == "1987")
+
+gap_1987 %>% 
+  ggplot(aes(x = gdpPercap, y = lifeExp, color = continent, shape = continent, size = pop)) +
+  geom_point()+
+  scale_x_log10()+
+  theme_minimal()
+
+```
+
+#### 2.Change colors and shapes of the point
+
+**Colors**
+
+```{r}
+gap_1987 %>% 
+  ggplot(aes(x = gdpPercap, y = lifeExp, color = continent, shape = continent, size = pop)) +
+  geom_point()+
+  scale_x_log10()+
+  scale_color_viridis_d()+
+  theme_minimal()
+```
+
+**Shapes**
+
+```{r}
+gap_1987 %>% 
+  ggplot(aes(x = gdpPercap, y = lifeExp, color = continent, shape = continent, size = pop)) +
+  geom_point()+
+  scale_x_log10()+
+  scale_shape_manual(values = c(2,4,6,8,10))+
+  theme_minimal()
+```
+
+#### 3. Changing the size
+
+```{r}
+gap_1987 %>% 
+  ggplot(aes(x = gdpPercap, y = lifeExp, color = continent, shape = continent, size = pop)) +
+  geom_point(alpha = 0.5)+
+  scale_x_log10()+
+  scale_size_continuous(range = c(5,7))+
+  theme_minimal()
+```
+
+#### 4. Reform the text in the plot
+
+```{r}
+gap_1987 %>% 
+  ggplot(aes(x = gdpPercap, y = lifeExp,color = continent, shape = continent, size = pop)) +
+  geom_point()+
+  scale_color_viridis_d()+
+  scale_shape_manual(values = c(2,4,6,8,10))+
+  scale_size_continuous(labels = label_comma())+
+  scale_x_continuous(labels = label_dollar())+
+  theme_minimal()
+```
