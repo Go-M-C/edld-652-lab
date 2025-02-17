@@ -1,0 +1,94 @@
+---
+title: "Flexdashboard_lab_ps3"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+library(scales)
+library(ggforce)
+library(ggrepel)
+library(gghighlight)
+library(ggplot2)
+library(dplyr)
+library(forcats)
+library(maps)
+library(scales)
+library(colorblindr)
+library(patchwork)
+theme_set(theme_minimal(base_family = "Times"))
+```
+
+```{r include=FALSE}
+honey <- read.csv(here("data","honeyproduction.csv"))
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r include=FALSE}
+honey_98_12 <- honey %>% 
+  filter(year == 1998 | year == 2012) %>% 
+  select(state, year, stocks) %>% 
+  mutate(state = fct_reorder(state, stocks))
+
+p1 <- ggplot(honey_98_12, aes(x = state, y = stocks, fill = year)) +
+  geom_col(position = "dodge") +
+  labs(title = "Honey Stocks by State in 1998 vs 2012",
+       x = "State",
+       y = "Honey Stocks",
+       fill = "Year") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 5))+
+  scale_y_continuous(labels = label_comma())
+```
+
+```{r}
+p1
+```
+
+Column {data-width=850}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r include=FALSE}
+honey_2012 <- honey %>% 
+  filter(year == 2012)
+
+honey_2012 <- honey_2012 %>% 
+  mutate(state = tolower(state.name[match(state, state.abb)]))
+
+us_states <- map_data("state")
+
+map_data_merged <- us_states %>% 
+  left_join(honey_2012, by = c("region" = "state"))
+
+p2 <- ggplot(map_data_merged, aes(x = long, y = lat, group = group, fill = prodvalue)) +
+  geom_polygon(color = "white") +
+  scale_fill_viridis_c(option = "plasma", na.value = "grey90") +
+  scale_fill_continuous(name = "Production Value", labels = label_dollar()) +
+  labs(title = "Honey Production Value by State(2012)",
+       x = "Longitude",
+       y = "Latitude",
+       fill = "Production Value ($)")
+```
+
+
+```{r}
+p2
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart C
+
+```{r}
+p1/p2 + plot_layout(guides = "collect", heights = c(1,1))
+```
