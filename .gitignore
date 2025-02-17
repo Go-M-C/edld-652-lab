@@ -47,3 +47,11 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+.DS_Store
+
+git rm --cached .DS_Store
+git commit -m "Ignore .DS_Store"
+git push
+
+
