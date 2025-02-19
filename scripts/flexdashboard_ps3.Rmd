@@ -20,6 +20,7 @@ library(maps)
 library(scales)
 library(colorblindr)
 library(patchwork)
+library(plotly) # adds some interactivity to the plot
 theme_set(theme_minimal(base_family = "Times"))
 ```
 
@@ -51,7 +52,7 @@ p1 <- ggplot(honey_98_12, aes(x = state, y = stocks, fill = year)) +
 ```
 
 ```{r}
-p1
+ggplotly(p1)
 ```
 
 # Honey Production Value by States
@@ -85,7 +86,7 @@ p2 <- ggplot(map_data_merged, aes(x = long, y = lat, group = group, fill = prodv
 
 
 ```{r}
-p2
+ggplotly(p2)
 ```
 
 # Honey Production Overview
