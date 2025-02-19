@@ -28,6 +28,10 @@ theme_set(theme_minimal(base_family = "Times"))
 honey <- read.csv(here("data","honeyproduction.csv"))
 ```
 
+Honey stock and values {.sidebar}
+===============
+Here are some fun facts about the honey industry in the United States. Check out the [honey](https://honey.com/newsroom/presskit/honey-industry-facts)
+
 # Honey Stocks by States
 
 Column {data-width=650}
