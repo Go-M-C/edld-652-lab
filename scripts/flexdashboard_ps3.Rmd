@@ -27,10 +27,12 @@ theme_set(theme_minimal(base_family = "Times"))
 honey <- read.csv(here("data","honeyproduction.csv"))
 ```
 
+# Honey Stocks by States
+
 Column {data-width=650}
 -----------------------------------------------------------------------
 
-### Chart A
+### Plot 1
 
 ```{r include=FALSE}
 honey_98_12 <- honey %>% 
@@ -51,6 +53,8 @@ p1 <- ggplot(honey_98_12, aes(x = state, y = stocks, fill = year)) +
 ```{r}
 p1
 ```
+
+# Honey Production Value by States
 
 Column {data-width=850}
 -----------------------------------------------------------------------
@@ -83,6 +87,8 @@ p2 <- ggplot(map_data_merged, aes(x = long, y = lat, group = group, fill = prodv
 ```{r}
 p2
 ```
+
+# Honey Production Overview
 
 Column {data-width=650}
 -----------------------------------------------------------------------
