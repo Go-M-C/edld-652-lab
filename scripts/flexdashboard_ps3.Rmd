@@ -2,6 +2,9 @@
 title: "Flexdashboard_lab_ps3"
 output: 
   flexdashboard::flex_dashboard:
+    theme:
+      version: 4
+      bootswatch: minty
     orientation: columns
     vertical_layout: fill
 ---
